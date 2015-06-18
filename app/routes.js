@@ -1,15 +1,34 @@
+var _= require('underscore');
+//var validator = require('./bower_components/validator-js/validator.js');
+var validator = require('validator');
+
 module.exports = function(app) {
+    app.post('/api/filter', function(req, res) {
 
-    app.post('/api/postrequest', function(req, res) {
+        console.log('inside service call');
+        //valid
+        if (validator.isJSON(req.body.payload)) {
+            console.log(req.body);
 
-        console.log('inside postrequest');
-        console.log(req.body);
-        //// create a todo, information comes from AJAX request from Angular
+            var resp = _.filter(_.where(req.body.payload, {drm: true}), function (item) {
+                return item.episodeCount > 0
+            });
 
-        res.send({"name":"hahaha"});
+            var newArray = [];
+            resp.forEach(function (item) {
+                var newItem = _.pick(item, 'image', 'slug', 'title');
+                newItem.image = _.propertyOf(newItem.image)('showImage');
+                newArray.push(newItem);
+            })
 
+            res.send(newArray);
+        }
+        else
+        {
+            //invalid json
+            res.send('no good man');
+        }
     });
-
 
 	// application -------------------------------------------------------------
 	app.get('*', function(req, res) {
