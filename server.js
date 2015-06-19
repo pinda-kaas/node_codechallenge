@@ -12,8 +12,6 @@ app.use(bodyParser.json()); // parse application/json
 app.use(methodOverride());
 app.use(clientErrorHandler);
 
-///app.use(bodyParser.json());
-
 // routes ======================================================================
 require('./app/routes.js')(app);
 
@@ -23,7 +21,7 @@ console.log("App listening on port " + port);
 
 function clientErrorHandler(err, req, res, next) {
     if (!validator.isJSON(JSON.stringify(req.body.payload))) {
-        res.status(500).send({ error: 'Something blew up!' });
+        res.status(500).send('{"error": "Could not decode request: JSON parsing failed"}');
     } else {
         next(err);
     }
